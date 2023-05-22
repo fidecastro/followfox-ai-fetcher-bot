@@ -54,8 +54,10 @@ async def fetch_images(input_text, input_negative_text):
     payload["negative_prompt"] = input_negative_text  # Introduce to payload the input text
     payload["enable_hr"] = False  # Introduce to payload the enable_hr
     payload["script_name"] = "x/y/z plot"  # Introduce to payload the script name
-    payload["script_args"] = [x_type:=1,x_values:="1,2,3,4,5",x_values_dropdown:=0,y_type:=6,y_values:="1,3,5,7,9",x_values_dropdown:=0,z_type:=4,z_values:="20,40",z_values_dropdown:=0,draw_legend:=True, include_lone_images:=False, include_sub_grids:=False, no_fixed_seeds:=False, margin_size:=0]  # Introduce to payload the script arguments
-    
+    payload["script_args"] = [x_type:=1,x_values:="1,2,3,4,5",x_values_dropdown:=0,y_type:=6,y_values:="1,3,5,7,9",x_values_dropdown:=0,z_type:=10,z_values:="'vodkaByFollowfoxAI_v20.safetensors','4_vodka_v3_100.ckpt'",z_values_dropdown:=["vodkaByFollowfoxAI_v20.safetensors", "4_vodka_v3_100.ckpt"],draw_legend:=True, include_lone_images:=False, include_sub_grids:=False, no_fixed_seeds:=False, margin_size:=0]  # Introduce to payload the script arguments
+
+
+
     async with aiohttp.ClientSession() as session:
         tasks = [generate_images(session, base_url, payload, j) for j in range(MAX_IMAGES)]
         return await asyncio.gather(*tasks)
