@@ -20,6 +20,7 @@ To run:
 - Introduced workflow so that it can work as txt2img => img2img+controlnet or txt2img => ultra-upscaling (this is controlled by two Boolean variables, img2img_switch and img2img_upscaling, in the top of the code)
 - Introduced payload-txt2img.json, payload-img2img.json, and payload-controlnet.json. Deprecated payload.json
 - Tested and corrected the base JSON inputs
+- Bug: if two or more Fetcher scripts are run at the same time using different models, it can cause trouble (you may generate images from a model you weren't supposed to)
 
 
 **Fetcher-bot-v2 - May 18 2023**
