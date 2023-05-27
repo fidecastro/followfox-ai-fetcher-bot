@@ -13,8 +13,14 @@ To run:
 
 **Version details:**
 
+**Fetcher-bot-v2.1 - May 26 2023**
+- Introduced workflow so that it works as txt2img => img2img+controlnet (without writing to file)
+- Introduced payload-txt2img.json, payload-img2img.json, and payload-controlnet.json. Deprecated payload.json
+- Redesigned code moving away from hiresfix, implementing this upscale workflow instead: https://followfoxai.substack.com/p/releasing-vodka-v2-and-all-the-details#%C2%A7upscale-workflow-to-try-in-automatic
+
+
 **Fetcher-bot-v2 - May 18 2023**
-- Redesigned code so that it works completely asynchronously (2 functions, fecht_images and generate_images, using )
+- Redesigned code so that it works completely asynchronously (2 functions, fecth_images and generate_images, using asyncio and aiohttp)
 - Redesigned code so that images are stored on memory
 - Changed discord token to be passed as an environmental variable and not within code (for security reasons)
 - Switched from discord.py (deprecated library) to py-cord (continuously maintained) and used Slash Command interface
