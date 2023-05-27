@@ -19,7 +19,7 @@ To run:
 **Fetcher-bot-v2.1 - May 26 2023**
 - Introduced workflow so that it can work as txt2img => img2img+controlnet or txt2img => ultra-upscaling
 - Introduced payload-txt2img.json, payload-img2img.json, and payload-controlnet.json. Deprecated payload.json
-- Redesigned code moving away from hiresfix, implementing this upscale workflow instead, involving ControlNet1.1+Ultimate Upscaling: https://followfoxai.substack.com/p/releasing-vodka-v2-and-all-the-details#%C2%A7upscale-workflow-to-try-in-automatic
+- Tested and corrected the base JSON inputs
 
 
 **Fetcher-bot-v2 - May 18 2023**
