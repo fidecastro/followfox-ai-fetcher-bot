@@ -122,7 +122,7 @@ async def fetch_images(input_text, input_negative_text):
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
 
-@bot.slash_command(name="create-bloodymary", guild_ids=SERVER_ID, description="Create upscaled images using FollowFox AI Bloody Mary", interaction_response_message="Creating images. Please wait...")
+@bot.slash_command(name="create-vodka-v3", guild_ids=SERVER_ID, description="Create upscaled images using FollowFox AI Bloody Mary", interaction_response_message="Creating images. Please wait...")
 async def create(ctx, *, prompt: str, negative_prompt: str = ""):
     start_time = time.time()
     print(f"{start_time:.2f}: Fetcher received request. Sending to SD API...")
