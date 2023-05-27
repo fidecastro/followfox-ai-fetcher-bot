@@ -98,13 +98,13 @@ async def generate_images(session, base_url, payload, image_number):
 
 
 async def fetch_images(input_text, input_negative_text):
-
     # Read the dictionary from the Payload JSON file
     with open('payload-txt2img.json', 'r') as json_file:
         payload = json.load(json_file)
 
     payload["prompt"] = input_text  # Introduce to payload the input text
     payload["negative_prompt"] = input_negative_text  # Introduce to payload the input text
+    base_url = "http://127.0.0.1:7860"
     
     async with aiohttp.ClientSession() as session:        
         async with session.get(f'{base_url}/sdapi/v1/options') as resp:
@@ -113,6 +113,13 @@ async def fetch_images(input_text, input_negative_text):
             #opt_json['sd_model_checkpoint'] = "vodkaByFollowfoxAI_v10.safetensors [d1d133610b]"
             #opt_json['sd_model_checkpoint'] = "vodkaByFollowfoxAI_v20.safetensors [5e1d7de310]"
             opt_json['sd_model_checkpoint'] = "4_vodka_v3_100.ckpt [8dc24d7ba9]"
+
+        # Send the updated options back to the server.
+        async with session.post(f'{base_url}/sdapi/v1/options', json=opt_json) as resp:
+            if resp.status != 200:
+                print(f'Failed to update model: {resp.status}')
+            else:
+                print('Model updated successfully')
         tasks = [generate_images(session, base_url, payload, k) for k in range(MAX_IMAGES)]
         file_objects = await asyncio.gather(*tasks)  # This will be a list of lists
         return [item for sublist in file_objects for item in sublist]  # Flatten the list
