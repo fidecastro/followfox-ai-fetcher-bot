@@ -8,7 +8,7 @@ To install:
 To run:
 1- launch automatic1111 like this:  python launch.py --api
 
-2- in another terminal: export DISCORD_BOT_TOKEN='<your token>'
+2- in another terminal: export DISCORD_BOT_TOKEN='INSERT YOUR TOKEN HERE'
   
 3- inside the last terminal: python fetcher-bot-v2.1-bloody-mary.py
 
