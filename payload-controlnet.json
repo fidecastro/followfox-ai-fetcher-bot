@@ -1,0 +1,20 @@
+{ 
+  "args": [
+    {
+      "input_image": null,
+      "mask": null,
+      "module": "tile_resample",
+      "model": "control_v11f1e_sd15_tile [a371b31b]",
+      "weight": 1,
+      "resize_mode": 1,
+      "lowvram": false,
+      "processor_res": 64,
+      "threshold_a": 64,
+      "threshold_b": 64,
+      "guidance_start": 0,
+      "guidance_end": 1,
+      "control_mode": 0,
+      "pixel_perfect": false
+    }
+  ]
+  }
