@@ -57,6 +57,10 @@ async def process_image(session, base_url, image_b64, payload, image_number):
     payload_upscale["cfg_scale"]=max(payload["cfg_scale"]-0.5,1)
     payload_upscale["steps"]=150
     payload_upscale["denoising_strength"] = 0.25
+    payload_upscale["script_name"] = "Ultimate SD upscale"  # Introduce to payload the script name
+    payload_upscale["script_args"] = [info:="", tile_width:=640, tile_height:=640, mask_blur:=8, padding:=32, seams_fix_width:=0, seams_fix_denoise:=0, seams_fix_padding:=0,
+            upscaler_index:=3, save_upscaled_image:=True, redraw_mode:=2, save_seams_fix_image:=False, seams_fix_mask_blur:=0,
+            seams_fix_type:=0, target_size_type:="From img2img2 settings", custom_width:=0, custom_height:=0, custom_scale:=1] # Introduce to payload the script arguments
     payload_upscale["alwayson_scripts"] = {"controlnet": controlnet}
 
     async with session.post(f'{base_url}/sdapi/v1/img2img', json=payload_upscale) as response3:
