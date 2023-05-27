@@ -7,7 +7,7 @@ To install:
 
 To run:
 1- launch automatic1111 like this:  python launch.py --api
-2- in another terminal: python fetcher-bot-v2.py
+2- in another terminal: python fetcher-bot-v2.1-bloody-mary.py
 
 -----------------
 
