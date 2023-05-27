@@ -15,6 +15,8 @@ TOKEN = os.getenv('DISCORD_BOT_TOKEN_BM')  # Fetch token from environment variab
 SERVER_ID = [1105589864453394472]  # Followfox AI Testbed
 MAX_IMAGES = 4  # Maximum number of images to generate
 base_url = "http://127.0.0.1:7860"
+img2img_switch = False # Set to True to enable Img2Img generation
+img2img_upscaling = False # if set to True AND img2img_swith is also True, will bypass Img2img+Controlnet and will just do Ultra Upscaling
 
 # These base prompts will be added to the input text to generate the images. The user will NOT see these prompts as additions to their input text.
 base_negative_prompt = ", worst quality, deformed, low quality, bad"
@@ -37,48 +39,51 @@ async def process_image(session, base_url, image_b64, payload, image_number):
         bio = io.BytesIO()  # we'll use BytesIO to hold the image in memory
         image.save(bio, 'PNG', pnginfo=pnginfo)
         bio.seek(0)  # reset file pointer to the beginning
-    
-    with open('payload-img2img.json', 'r') as json_file:
-        payload_upscale = json.load(json_file)
+    if img2img_switch == False: 
+        print("Avoiding Txt2Img processing...")
+        return discord.File(bio, filename=f'image{image_number+1}.png')  # directly return a Discord file object
+    else: 
+        print("Processing image with Img2Img...")
+        with open('payload-img2img.json', 'r') as json_file:
+            payload_upscale = json.load(json_file)
 
-    with open('payload-controlnet.json', 'r') as json_file:
-        controlnet = json.load(json_file)
-            
-    controlnet["args"][0]["input_image"]=[png_payload["image"]]
-    controlnet["args"][0]["control_mode"] = 2  # Choose "ControlNet is more important” option
-    controlnet["args"][0]["module"]="tile_resample"
-    controlnet["args"][0]["model"]="control_v11f1e_sd15_tile [a371b31b]"            
-    payload_upscale["init_images"] = [png_payload["image"]]
-    payload_upscale["prompt"] = payload["prompt"]
-    payload_upscale["negative_prompt"] = payload["negative_prompt"]
-    payload_upscale["resize_mode"]= 0 #3 = Just resize (latent upscale)
-    payload_upscale["width"]=1024
-    payload_upscale["height"]=1024
-    payload_upscale["cfg_scale"]=max(payload["cfg_scale"]-0.5,1)
-    payload_upscale["steps"]=150
-    payload_upscale["denoising_strength"] = 0.25
-    payload_upscale["script_name"] = "Ultimate SD upscale"  # Introduce to payload the script name
-    payload_upscale["script_args"] = [info:="", tile_width:=640, tile_height:=640, mask_blur:=8, padding:=32, seams_fix_width:=0, seams_fix_denoise:=0, seams_fix_padding:=0,
-            upscaler_index:=3, save_upscaled_image:=True, redraw_mode:=2, save_seams_fix_image:=False, seams_fix_mask_blur:=0,
-            seams_fix_type:=0, target_size_type:="From img2img2 settings", custom_width:=0, custom_height:=0, custom_scale:=1] # Introduce to payload the script arguments
-    payload_upscale["alwayson_scripts"] = {"controlnet": controlnet}
+        with open('payload-controlnet.json', 'r') as json_file:
+            controlnet = json.load(json_file)
+                
+        controlnet["args"][0]["input_image"]=[png_payload["image"]]
+        controlnet["args"][0]["control_mode"] = 2  # Choose "ControlNet is more important” option
+        controlnet["args"][0]["module"]="tile_resample"
+        controlnet["args"][0]["model"]="control_v11f1e_sd15_tile [a371b31b]"            
+        payload_upscale["init_images"] = [png_payload["image"]]
+        payload_upscale["prompt"] = payload["prompt"]
+        payload_upscale["negative_prompt"] = payload["negative_prompt"]
+        payload_upscale["resize_mode"]= 0 #3 = Just resize (latent upscale)
+        payload_upscale["width"]=1024
+        payload_upscale["height"]=1024
+        payload_upscale["cfg_scale"]=max(payload["cfg_scale"]-0.5,1)
+        payload_upscale["steps"]=150
+        payload_upscale["denoising_strength"] = 0.25
+        if img2img_upscaling == True:
+            payload_upscale["script_name"] = "Ultimate SD upscale"  # Introduce to payload the script name
+            payload_upscale["script_args"] = [info:="", tile_width:=640, tile_height:=640, mask_blur:=8, padding:=32, seams_fix_width:=0, seams_fix_denoise:=0, seams_fix_padding:=0, upscaler_index:=3, save_upscaled_image:=True, redraw_mode:=2, save_seams_fix_image:=False, seams_fix_mask_blur:=0, seams_fix_type:=0, target_size_type:="From img2img2 settings", custom_width:=0, custom_height:=0, custom_scale:=1] # Introduce to payload the script arguments
+        payload_upscale["alwayson_scripts"] = {"controlnet": controlnet}
 
-    async with session.post(f'{base_url}/sdapi/v1/img2img', json=payload_upscale) as response3:
-        r = await response3.json()
-        j = r['images'][0]
-        print(f"IMG2IMG image {j[-32:]} for TXT2IMG image {image_b64[-32:]}")
-        image_upscale = Image.open(io.BytesIO(base64.b64decode(j)))
-        png_payload_upscale = {
-            "image": "data:image/png;base64," + j
-        }
-        async with session.post(f'{base_url}/sdapi/v1/png-info', json=png_payload_upscale) as response4:
-            pnginfo_data = await response4.json()
-            pnginfo = PngImagePlugin.PngInfo()
-            pnginfo.add_text("parameters", pnginfo_data.get("info"))
-            bio_upscale = io.BytesIO()  # we'll use BytesIO to hold the image in memory
-            image_upscale.save(bio_upscale, 'PNG', pnginfo=pnginfo)
-            bio_upscale.seek(0)  # reset file pointer to the beginning        
-        return discord.File(bio_upscale, filename=f'image{image_number+1}.png')  # directly return a Discord file object
+        async with session.post(f'{base_url}/sdapi/v1/img2img', json=payload_upscale) as response3:
+            r = await response3.json()
+            j = r['images'][0]
+            print(f"IMG2IMG image {j[-32:]} for TXT2IMG image {image_b64[-32:]}")
+            image_upscale = Image.open(io.BytesIO(base64.b64decode(j)))
+            png_payload_upscale = {
+                "image": "data:image/png;base64," + j
+            }
+            async with session.post(f'{base_url}/sdapi/v1/png-info', json=png_payload_upscale) as response4:
+                pnginfo_data = await response4.json()
+                pnginfo = PngImagePlugin.PngInfo()
+                pnginfo.add_text("parameters", pnginfo_data.get("info"))
+                bio_upscale = io.BytesIO()  # we'll use BytesIO to hold the image in memory
+                image_upscale.save(bio_upscale, 'PNG', pnginfo=pnginfo)
+                bio_upscale.seek(0)  # reset file pointer to the beginning        
+            return discord.File(bio_upscale, filename=f'image{image_number+1}.png')  # directly return a Discord file object
             
 
 async def generate_images(session, base_url, payload, image_number):
