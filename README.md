@@ -16,6 +16,10 @@ To run:
 
 **Version details:**
 
+**Fetcher-bot-v2.2 - May 31 2023**
+- Created guardrails using FileLock and Semaphore to attempt to resolve multiple bots running at the same time
+- Deprecated the Img2Img+ControlNet code
+
 **Fetcher-bot-v2.1 - May 26 2023**
 - Introduced workflow so that it can work as txt2img => img2img+controlnet or txt2img => ultra-upscaling (this is controlled by two Boolean variables, img2img_switch and img2img_upscaling, in the top of the code)
 - Introduced payload-txt2img.json, payload-img2img.json, and payload-controlnet.json. Deprecated payload.json
