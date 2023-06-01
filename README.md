@@ -18,6 +18,7 @@ To run:
 
 **Fetcher-bot-v2.2 - May 31 2023**
 - Created guardrails using FileLock and Semaphore to attempt to resolve multiple bots running at the same time
+- Created webicons version and consolidated Bloody-Mary and Vodka-v3 in one
 - Deprecated the Img2Img+ControlNet code
 
 **Fetcher-bot-v2.1 - May 26 2023**
